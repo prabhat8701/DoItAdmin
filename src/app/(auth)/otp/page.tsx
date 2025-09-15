@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function OtpPage() {
+function OtpForm() {
   const router = useRouter();
   const params = useSearchParams();
   const [phone, setPhone] = useState("");
@@ -106,6 +106,20 @@ export default function OtpPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function OtpPage() {
+  return (
+    <Suspense fallback={
+      <div className="container">
+        <div className="card">
+          <div className="title">Loading...</div>
+        </div>
+      </div>
+    }>
+      <OtpForm />
+    </Suspense>
   );
 }
 
