@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-function OtpForm() {
+export default function OtpPage() {
   const router = useRouter();
   const params = useSearchParams();
   const [phone, setPhone] = useState("");
@@ -14,6 +14,14 @@ function OtpForm() {
   useEffect(() => {
     const p = params.get("phone");
     if (p) setPhone(p);
+    
+    // Auto-fill OTP from sessionStorage (debug mode)
+    const debugOtp = sessionStorage.getItem('debugOtp');
+    if (debugOtp) {
+      setOtp(debugOtp);
+      // Clear it after use for security
+      sessionStorage.removeItem('debugOtp');
+    }
   }, [params]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -106,20 +114,6 @@ function OtpForm() {
         </p>
       </div>
     </div>
-  );
-}
-
-export default function OtpPage() {
-  return (
-    <Suspense fallback={
-      <div className="container">
-        <div className="card">
-          <div className="title">Loading...</div>
-        </div>
-      </div>
-    }>
-      <OtpForm />
-    </Suspense>
   );
 }
 

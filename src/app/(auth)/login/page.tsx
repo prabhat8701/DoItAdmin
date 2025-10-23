@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-function LoginForm() {
+export default function LoginPage() {
   const router = useRouter();
   const params = useSearchParams();
   const [phone, setPhone] = useState("");
@@ -32,7 +32,11 @@ function LoginForm() {
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Failed to send OTP");
-      setDebugCode(data.code || null);
+      setDebugCode(data.otp || null);
+      // Store debug OTP in sessionStorage for auto-fill (more secure than URL)
+      if (data.otp) {
+        sessionStorage.setItem('debugOtp', data.otp);
+      }
       router.push(`/otp?phone=${encodeURIComponent(phone)}`);
     } catch (err: any) {
       setError(err.message || "Something went wrong");
@@ -45,8 +49,8 @@ function LoginForm() {
     <div className="container">
       <div className="card">
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{ 
-            fontSize: '48px', 
+          <div style={{
+            fontSize: '48px',
             marginBottom: '16px',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             WebkitBackgroundClip: 'text',
@@ -68,10 +72,10 @@ function LoginForm() {
               required
               style={{ paddingLeft: '48px' }}
             />
-            <div style={{ 
-              position: 'absolute', 
-              left: '16px', 
-              top: '50%', 
+            <div style={{
+              position: 'absolute',
+              left: '16px',
+              top: '50%',
               transform: 'translateY(-50%)',
               fontSize: '18px'
             }}>
@@ -87,9 +91,9 @@ function LoginForm() {
           New here? <a href="/signup" style={{ fontWeight: '600' }}>Create an account</a>
         </p> */}
         {debugCode && (
-          <div style={{ 
-            marginTop: '16px', 
-            padding: '12px', 
+          <div style={{
+            marginTop: '16px',
+            padding: '12px',
             background: 'rgba(81, 207, 102, 0.1)',
             border: '1px solid rgba(81, 207, 102, 0.2)',
             borderRadius: '8px',
@@ -102,20 +106,6 @@ function LoginForm() {
         )}
       </div>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={
-      <div className="container">
-        <div className="card">
-          <div className="title">Loading...</div>
-        </div>
-      </div>
-    }>
-      <LoginForm />
-    </Suspense>
   );
 }
 
